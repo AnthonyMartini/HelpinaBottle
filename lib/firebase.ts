@@ -1,10 +1,17 @@
 import * as admin from 'firebase-admin';
 
 function getFirebaseConfig() {
-  // Option 1: Full JSON string from environment (preferred for CI/CD like Amplify)
-  if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+  let serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT;
+
+  if (serviceAccount) {
+    // Strip surrounding single or double quotes if present
+    if ((serviceAccount.startsWith("'") && serviceAccount.endsWith("'")) || 
+        (serviceAccount.startsWith('"') && serviceAccount.endsWith('"'))) {
+      serviceAccount = serviceAccount.slice(1, -1);
+    }
+
     try {
-      return JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+      return JSON.parse(serviceAccount);
     } catch (e) {
       console.error('Error parsing FIREBASE_SERVICE_ACCOUNT:', e);
     }
@@ -22,15 +29,13 @@ function getFirebaseConfig() {
   return null;
 }
 
-if (!admin.apps.length) {
-  const config = getFirebaseConfig();
-  if (config) {
-    admin.initializeApp({
-      credential: admin.credential.cert(config),
-    });
-  } else {
-    console.warn('Firebase initialized without cloud credentials. Using local defaults if available.');
-  }
+const config = getFirebaseConfig();
+
+if (!admin.apps.length && config) {
+  admin.initializeApp({
+    credential: admin.credential.cert(config),
+  });
 }
 
-export const adminDb = admin.firestore();
+// Export adminDb, but it will only be usable if initializeApp was called
+export const adminDb = admin.apps.length ? admin.firestore() : null;

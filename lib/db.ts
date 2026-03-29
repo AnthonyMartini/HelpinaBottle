@@ -9,11 +9,11 @@ export interface Bottle {
 
 const BOTTLES_COLLECTION = "bottles";
 
-/**
- * Fetches the most recent bottles from Firestore for semantic search.
- * We limit to 200 for performance/free tier reasons.
- */
 export async function getBottles(): Promise<Bottle[]> {
+  if (!adminDb) {
+    console.warn("Firebase Admin DB not initialized. Check your environment variables.");
+    return [];
+  }
   try {
     const bottlesRef = adminDb.collection(BOTTLES_COLLECTION);
     const snapshot = await bottlesRef
@@ -35,6 +35,10 @@ export async function getBottles(): Promise<Bottle[]> {
  * Saves a new bottle (wisdom story) to Firestore.
  */
 export async function saveBottle(bottle: Omit<Bottle, 'id'>): Promise<string> {
+  if (!adminDb) {
+    console.error("Firebase Admin DB not initialized. Cannot save bottle.");
+    throw new Error("Cloud storage is currently unavailable.");
+  }
   try {
     const docRef = await adminDb.collection(BOTTLES_COLLECTION).add({
       ...bottle,
@@ -51,6 +55,10 @@ export async function saveBottle(bottle: Omit<Bottle, 'id'>): Promise<string> {
  * Finds a specific bottle by its Firestore Document ID.
  */
 export async function getBottleById(id: string): Promise<Bottle | null> {
+  if (!adminDb) {
+    console.warn("Firebase Admin DB not initialized. Cannot fetch bottle by ID.");
+    return null;
+  }
   try {
     const docRef = adminDb.collection(BOTTLES_COLLECTION).doc(id);
     const docSnap = await docRef.get();
