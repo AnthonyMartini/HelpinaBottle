@@ -30,13 +30,9 @@ export async function POST(req: NextRequest) {
     const result = await model.embedContent(text);
     const embedding = result.embedding.values;
 
-    // Generate unique ID
-    const id = crypto.randomUUID();
-
-    // Save bottle
-    const createdAt = new Date().toISOString();
-    const bottle = { id, text, embedding, createdAt };
-    await saveBottle(bottle);
+    // Save bottle to Firestore
+    const bottleData = { text, embedding };
+    const id = await saveBottle(bottleData);
 
     return NextResponse.json({ success: true, id }, { status: 201 });
   } catch (error: any) {

@@ -1,5 +1,4 @@
-import fs from 'fs/promises';
-import path from 'path';
+import { adminDb } from "./firebase";
 
 export interface Bottle {
   id: string;
@@ -8,43 +7,60 @@ export interface Bottle {
   createdAt?: string;
 }
 
-const DB_PATH = path.join(process.cwd(), 'data', 'bottles.json');
+const BOTTLES_COLLECTION = "bottles";
 
 /**
- * Safely reads and parses the local bottles JSON file.
- * Returns an empty array if the file doesn't exist.
+ * Fetches the most recent bottles from Firestore for semantic search.
+ * We limit to 200 for performance/free tier reasons.
  */
 export async function getBottles(): Promise<Bottle[]> {
   try {
-    const data = await fs.readFile(DB_PATH, 'utf-8');
-    return JSON.parse(data) as Bottle[];
-  } catch (error: any) {
-    if (error.code === 'ENOENT') {
-      return [];
-    }
-    console.error('Error reading bottles database:', error);
-    throw new Error('Failed to read from local database.');
-  }
-}
-
-/**
- * Reads the current array, pushes the new bottle, and overwrites the JSON file.
- */
-export async function saveBottle(bottle: Bottle): Promise<void> {
-  try {
-    const currentBottles = await getBottles();
-    currentBottles.push(bottle);
-    await fs.writeFile(DB_PATH, JSON.stringify(currentBottles, null, 2), 'utf-8');
+    const bottlesRef = adminDb.collection(BOTTLES_COLLECTION);
+    const snapshot = await bottlesRef
+      .orderBy("createdAt", "desc")
+      .limit(200)
+      .get();
+    
+    return snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    })) as Bottle[];
   } catch (error) {
-    console.error('Error saving bottle to database:', error);
-    throw new Error('Failed to save to local database.');
+    console.error("Error fetching bottles from Firestore:", error);
+    return [];
   }
 }
 
 /**
- * Finds a specific bottle by its unique ID.
+ * Saves a new bottle (wisdom story) to Firestore.
+ */
+export async function saveBottle(bottle: Omit<Bottle, 'id'>): Promise<string> {
+  try {
+    const docRef = await adminDb.collection(BOTTLES_COLLECTION).add({
+      ...bottle,
+      createdAt: new Date().toISOString()
+    });
+    return docRef.id;
+  } catch (error) {
+    console.error("Error saving bottle to Firestore:", error);
+    throw new Error("Failed to save wisdom to the cloud.");
+  }
+}
+
+/**
+ * Finds a specific bottle by its Firestore Document ID.
  */
 export async function getBottleById(id: string): Promise<Bottle | null> {
-  const bottles = await getBottles();
-  return bottles.find((b) => b.id === id) || null;
+  try {
+    const docRef = adminDb.collection(BOTTLES_COLLECTION).doc(id);
+    const docSnap = await docRef.get();
+    
+    if (docSnap.exists) {
+      return { id: docSnap.id, ...docSnap.data() } as Bottle;
+    }
+    return null;
+  } catch (error) {
+    console.error("Error fetching bottle by ID:", error);
+    return null;
+  }
 }
