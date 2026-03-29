@@ -1,0 +1,42 @@
+[
+  {
+    "id": "1",
+    "title": "Finding the 'Caregiver Anchor'",
+    "content": "When my father was sick, I felt like I was drowning in daily tasks. The solution I found wasn't doing more—it was finding one 30-minute 'anchor' every day where I was NOT a caregiver. For me, it was 6 AM coffee with a book. No phone, no lists. It saved my sanity.",
+    "tags": ["caregiver exhaustion", "loneliness", "burnout"],
+    "author": "Sarah M.",
+    "createdAt": "2026-03-20T10:00:00Z"
+  },
+  {
+    "id": "2",
+    "title": "The 'Friendship Queue'",
+    "content": "Chronic illness made me isolated. I felt too tired to reach out. I started a 'Friendship Queue'—one text a day to one person, just saying 'Thinking of you'. I didn't ask for anything. Within a month, my circle felt alive again without me feeling drained.",
+    "tags": ["loneliness", "disability", "social fatigue"],
+    "author": "David L.",
+    "createdAt": "2026-03-21T11:30:00Z"
+  },
+  {
+    "id": "3",
+    "title": "Small Wins Strategy",
+    "content": "When I was depressed and couldn't study, I stopped trying to 'be productive'. I made a list of 'micro-tasks' like 'open the laptop' or 'read one paragraph'. It sounds silly, but the dopamine from checking them off helped me rebuild momentum.",
+    "tags": ["mental health", "student stress", "depression"],
+    "author": "Alex J.",
+    "createdAt": "2026-03-22T09:15:00Z"
+  },
+  {
+    "id": "4",
+    "title": "Navigating Public Transit with Mobility Issues",
+    "content": "Navigating the subway in a wheelchair was a nightmare until I found a local group that shared 'Real-Time Access Reports'. Now, I don't just check the map; I check the human-driven reports. It's about community oversight of the system.",
+    "tags": ["disability", "accessibility", "navigation"],
+    "author": "Sam K.",
+    "createdAt": "2026-03-23T14:45:00Z"
+  },
+  {
+    "id": "5",
+    "title": "Digital Detox for Mental Clarity",
+    "content": "As a student, the constant ping of notifications was crushing me. I adopted a 'No-Screens-After-9PM' rule and bought a physical alarm clock. My sleep improved, and my anxiety dropped significantly within two weeks.",
+    "tags": ["mental health", "student stress", "anxiety"],
+    "author": "Priya R.",
+    "createdAt": "2026-03-24T20:00:00Z"
+  }
+]
