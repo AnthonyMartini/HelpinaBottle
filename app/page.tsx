@@ -118,13 +118,6 @@ export default function HelpInABottleSPA() {
           >
             About
           </button>
-          <button 
-            onClick={() => initiateTransition('lookup')}
-            className="btn-glass" 
-            style={{ borderColor: 'rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.05)', padding: '0.6rem 1.5rem', fontSize: '0.7rem', letterSpacing: '0.15em' }}
-          >
-            Check Status
-          </button>
         </div>
       )}
 

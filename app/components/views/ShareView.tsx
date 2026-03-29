@@ -160,8 +160,8 @@ export default function ShareView({ onBack }: ShareViewProps) {
   return (
     <main className="hero-content" style={{ marginTop: '0', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100vh', padding: '1rem' }}>
       <div className="glass-card" style={{ 
-        maxWidth: '1000px', 
-        width: '100%', 
+        maxWidth: '1200px', 
+        width: '95%', 
         maxHeight: '90vh',
         background: 'rgba(255, 255, 255, 0.7)', 
         backdropFilter: 'blur(45px)',
@@ -185,14 +185,17 @@ export default function ShareView({ onBack }: ShareViewProps) {
                 onClick={onBack}
                 style={{ background: 'transparent', border: 'none', color: '#888', fontSize: '0.7rem', letterSpacing: '0.1em', textTransform: 'uppercase', cursor: 'pointer', fontWeight: 500 }}
               >
-                ← Back
+                ← Back to Shore
               </button>
             </div>
 
             {/* Header */}
-            <div style={{ marginBottom: '1.5rem', textAlign: 'center' }}>
+            <div style={{ marginBottom: '1.5rem', textAlign: 'center', padding: '0 2rem' }}>
               <h1 style={{ fontFamily: 'var(--font-serif, serif)', fontSize: '2.2rem', fontWeight: 500, marginBottom: '0.5rem' }}>Share Your Wisdom</h1>
-              <p style={{ fontSize: '0.85rem', opacity: 0.6, letterSpacing: '0.15em', textTransform: 'uppercase' }}>Your journey is someone else's map.</p>
+              <p style={{ fontSize: '0.85rem', opacity: 0.6, letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '0.8rem' }}>Your journey is someone else's map.</p>
+              <p style={{ fontSize: '1rem', opacity: 0.5, lineHeight: 1.5, fontWeight: 300, maxWidth: '900px', margin: '0 auto' }}>
+                Your journey is a lighthouse for those still adrift. Share what you learned so no one has to navigate the darkness alone.
+              </p>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '2rem', flex: 1, minHeight: 0 }}>
@@ -201,7 +204,8 @@ export default function ShareView({ onBack }: ShareViewProps) {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                   <label style={{ fontSize: '0.7rem', letterSpacing: '0.1em', textTransform: 'uppercase', opacity: 0.5, marginBottom: '0.8rem', fontWeight: 700 }}>Write Your Experience</label>
-                  <textarea 
+
+            <textarea 
                     value={draft}
                     onChange={(e) => setDraft(e.target.value)}
                     placeholder="Tell us what you learned from a struggle you overcame..."
@@ -224,24 +228,26 @@ export default function ShareView({ onBack }: ShareViewProps) {
                 </div>
                 
                 <button 
-                  onClick={handleReviewRequest}
-                  disabled={!draft.trim() || isAiTyping}
-                  style={{ 
-                    background: '#1a1a1a', 
-                    color: 'white', 
-                    padding: '1.2rem', 
-                    borderRadius: '20px', 
-                    border: 'none', 
-                    cursor: 'pointer',
-                    fontSize: '0.9rem',
-                    letterSpacing: '0.1em',
-                    fontWeight: 500,
-                    opacity: (!draft.trim() || isAiTyping) ? 0.3 : 1,
-                    transition: 'all 0.3s ease'
-                  }}
-                >
-                  {isAiTyping ? 'CONSULTING SCRIBE...' : 'REVIEW WITH THE SCRIBE'}
-                </button>
+              onClick={handleReviewRequest}
+              disabled={!draft.trim() || isAiTyping}
+              className="btn-glass"
+              style={{ 
+                background: '#1a1a1a', 
+                color: 'white', 
+                padding: '1.2rem 2.5rem', 
+                borderRadius: '50px', 
+                fontSize: '0.9rem', 
+                letterSpacing: '0.1em',
+                cursor: 'pointer',
+                border: 'none',
+                width: '100%',
+                marginTop: '1.5rem',
+                opacity: (!draft.trim() || isAiTyping) ? 0.4 : 1,
+                boxShadow: isAiTyping ? 'none' : '0 10px 30px rgba(0,0,0,0.2)'
+              }}
+            >
+              {isAiTyping ? 'SCRIBE IS REVIEWING...' : 'CONSULT WITH SCRIBE'}
+            </button>
 
                 {isReady && (
                   <div style={{ 
@@ -295,13 +301,48 @@ export default function ShareView({ onBack }: ShareViewProps) {
                     scrollbarWidth: 'none'
                   }}
                 >
-                  <div style={{ alignSelf: 'flex-start', maxWidth: '90%' }}>
+                  <div style={{ 
+                    alignSelf: 'flex-start', 
+                    maxWidth: '90%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'flex-start'
+                  }}>
+                    <span style={{ 
+                      fontSize: '0.65rem', 
+                      textTransform: 'uppercase', 
+                      letterSpacing: '0.1em', 
+                      opacity: 0.4, 
+                      marginBottom: '0.4rem',
+                      fontWeight: 700
+                    }}>
+                      Scribe
+                    </span>
                     <div style={{ background: 'white', padding: '1rem', borderRadius: '0 15px 15px 15px', fontSize: '0.9rem', lineHeight: 1.4, border: '1px solid rgba(0,0,0,0.05)' }}>
                       Welcome. Drafe your wisdom and I will help you ensure it can properly guide the lost.
                     </div>
                   </div>
                   {messages.map((msg, idx) => (
-                    <div key={idx} style={{ alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start', maxWidth: '90%' }}>
+                    <div 
+                      key={idx} 
+                      style={{ 
+                        alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start', 
+                        maxWidth: '90%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: msg.role === 'user' ? 'flex-end' : 'flex-start'
+                      }}
+                    >
+                      <span style={{ 
+                        fontSize: '0.65rem', 
+                        textTransform: 'uppercase', 
+                        letterSpacing: '0.1em', 
+                        opacity: 0.4, 
+                        marginBottom: '0.4rem',
+                        fontWeight: 700
+                      }}>
+                        {msg.role === 'user' ? 'You' : 'Scribe'}
+                      </span>
                       <div style={{ 
                         background: msg.role === 'user' ? '#1a1a1a' : 'white', 
                         color: msg.role === 'user' ? 'white' : '#1a1a1a',

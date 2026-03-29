@@ -113,7 +113,7 @@ export default function AskView({ onBack, onResults }: AskViewProps) {
                 Others have walked these shores before you.
               </p>
               <p style={{ fontSize: '1.05rem', opacity: 0.5, lineHeight: 1.6, fontWeight: 300, color: '#444', maxWidth: '800px', margin: '0 auto' }}>
-                No one should have to navigate a storm alone. By sharing what you are facing, we can help you find the messages of wisdom left behind by those who survived the same tides.
+                No one should have to navigate a storm alone. By sharing what you are facing, we can help you find messages of wisdom left behind by those who survived the same tides.
               </p>
             </div>
 
@@ -133,7 +133,24 @@ export default function AskView({ onBack, onResults }: AskViewProps) {
               className="chat-thread"
             >
               {/* Initial Greeting */}
-              <div style={{ alignSelf: 'flex-start', maxWidth: '85%', animation: 'fadeUp 0.6s ease out' }}>
+              <div style={{ 
+                alignSelf: 'flex-start', 
+                maxWidth: '85%', 
+                animation: 'fadeUp 0.6s ease out',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-start'
+              }}>
+                <span style={{ 
+                  fontSize: '0.65rem', 
+                  textTransform: 'uppercase', 
+                  letterSpacing: '0.1em', 
+                  opacity: 0.4, 
+                  marginBottom: '0.4rem',
+                  fontWeight: 700
+                }}>
+                  The Guide
+                </span>
                 <div style={{ background: 'rgba(0,0,0,0.08)', border: '1px solid rgba(0,0,0,0.08)', padding: '1.2rem 1.6rem', borderRadius: '0 20px 20px 20px', fontSize: '1.1rem', lineHeight: 1.5, fontWeight: 300, textAlign: 'left' }}>
                   Welcome. Speak your heart... what are you navigating in the vast ocean of life?
                 </div>
@@ -145,9 +162,22 @@ export default function AskView({ onBack, onResults }: AskViewProps) {
                   style={{ 
                     alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start', 
                     maxWidth: '85%',
-                    animation: 'fadeUp 0.4s ease out'
+                    animation: 'fadeUp 0.4s ease out',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: msg.role === 'user' ? 'flex-end' : 'flex-start'
                   }}
                 >
+                  <span style={{ 
+                    fontSize: '0.65rem', 
+                    textTransform: 'uppercase', 
+                    letterSpacing: '0.1em', 
+                    opacity: 0.4, 
+                    marginBottom: '0.4rem',
+                    fontWeight: 700
+                  }}>
+                    {msg.role === 'user' ? 'You' : 'The Guide'}
+                  </span>
                   <div style={{ 
                     background: msg.role === 'user' ? '#1a1a1a' : 'rgba(0,0,0,0.08)', 
                     color: msg.role === 'user' ? 'white' : '#1a1a1a',

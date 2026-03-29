@@ -154,8 +154,8 @@ export default function ResultsView({ query, onBack }: ResultsViewProps) {
   return (
     <main className="hero-content" style={{ marginTop: '0', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', minHeight: '100vh', padding: '4rem 2rem' }}>
       <div className="glass-card fade-up-reveal scrollbox-minimal" style={{ 
-        maxWidth: '1000px', 
-        width: '100%', 
+        maxWidth: '1200px', 
+        width: '95%', 
         maxHeight: '85vh',
         overflowY: 'auto',
         scrollbarWidth: 'none',
@@ -220,7 +220,7 @@ export default function ResultsView({ query, onBack }: ResultsViewProps) {
           </div>
           
           {matches.length === 0 ? (
-            <p style={{ textAlign: 'center', fontSize: '1.2rem', opacity: 0.5, padding: '4rem 0' }}>The ocean is quiet today. No direct matches found, but the Guardian's words remain.</p>
+            <p style={{ textAlign: 'center', fontSize: '1.2rem', opacity: 0.5, padding: '4rem 0' }}>The ocean is quiet today. No direct matches found, but the Guide's words remain.</p>
           ) : (
             matches.map((match, i) => (
               <div key={match.id} className="fade-up-reveal" style={{ 

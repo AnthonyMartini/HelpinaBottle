@@ -58,7 +58,7 @@ export default function AboutView({ onBack }: AboutViewProps) {
               <div>
                 <p style={{ fontSize: '0.9rem', fontWeight: 600, marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#1a1a1a' }}>AI-Guided Moderation</p>
                 <p style={{ fontSize: '1rem', opacity: 0.8, lineHeight: 1.7 }}>
-                  Our specialized AI agents, <strong>The Scribe</strong> and <strong>The Synthesis</strong>, interact with every storyteller and searcher. They ensure that all shared wisdom and inquiries remain appropriate, empathetic, and within our community guidelines, acting as gentle curators of the human experience.
+                  Our specialized AI agents, <strong>Scribe</strong> and <strong>Guide</strong>, powered by <strong>Gemini 3.1 Flash Lite</strong>, interact with every storyteller and searcher. They ensure that all shared wisdom and inquiries remain appropriate, empathetic, and within our community guidelines, acting as gentle curators of the human experience.
                 </p>
               </div>
               <div>
