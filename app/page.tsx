@@ -7,6 +7,7 @@ import AskView from './components/views/AskView';
 import ShareView from './components/views/ShareView';
 import AboutView from './components/views/AboutView';
 import ResultsView from './components/views/ResultsView';
+import LookupView from './components/views/LookupView';
 
 export default function HelpInABottleSPA() {
   const [activeView, setActiveView] = useState('home');
@@ -48,6 +49,8 @@ export default function HelpInABottleSPA() {
         return <AboutView onBack={() => initiateTransition('home')} />;
       case 'results':
         return <ResultsView query={query} onBack={() => initiateTransition('home')} />;
+      case 'lookup':
+        return <LookupView onBack={() => initiateTransition('home')} />;
       default:
         return (
           <main className="hero-content">
@@ -59,16 +62,8 @@ export default function HelpInABottleSPA() {
               Connecting communities, one message at a time.
             </p>
             
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2rem' }}>
-              <button 
-                onClick={() => initiateTransition('about')}
-                className="btn-glass" 
-                style={{ borderColor: 'rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.05)', padding: '0.8rem 2rem', fontSize: '0.75rem' }}
-              >
-                About
-              </button>
-              
-              <div className="button-group">
+            <div className="button-group" style={{ flexDirection: 'column', alignItems: 'center', gap: '2rem' }}>
+              <div style={{ display: 'flex', gap: '2.5rem', justifyContent: 'center' }}>
                 <button 
                   onClick={() => initiateTransition('ask')}
                   className="btn-glass"
@@ -115,7 +110,26 @@ export default function HelpInABottleSPA() {
 
       {/* Minimalism branding anchor (Static on Home) */}
       {displayView === 'home' && navStage !== 'exiting' && (
-        <div style={{ position: 'absolute', bottom: '2rem', width: '100%', textAlign: 'center', color: 'rgba(255,255,255,0.4)', fontSize: '0.65rem', letterSpacing: '0.35em', textTransform: 'uppercase', zIndex: 10, fontWeight: 300 }} className="fade-up-reveal">
+        <div style={{ position: 'absolute', bottom: '6.5rem', width: '100%', textAlign: 'center', zIndex: 20, display: 'flex', justifyContent: 'center', gap: '1rem' }} className="fade-up-reveal">
+          <button 
+            onClick={() => initiateTransition('about')}
+            className="btn-glass" 
+            style={{ borderColor: 'rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.05)', padding: '0.6rem 1.5rem', fontSize: '0.7rem', letterSpacing: '0.15em' }}
+          >
+            About
+          </button>
+          <button 
+            onClick={() => initiateTransition('lookup')}
+            className="btn-glass" 
+            style={{ borderColor: 'rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.05)', padding: '0.6rem 1.5rem', fontSize: '0.7rem', letterSpacing: '0.15em' }}
+          >
+            Check Status
+          </button>
+        </div>
+      )}
+
+      {displayView === 'home' && navStage !== 'exiting' && (
+        <div style={{ position: 'absolute', bottom: '3rem', width: '100%', textAlign: 'center', color: 'rgba(255,255,255,0.8)', fontSize: '0.9rem', letterSpacing: '0.5em', textTransform: 'uppercase', zIndex: 20, fontWeight: 300, textShadow: '0 2px 10px rgba(0,0,0,0.4)' }} className="fade-up-reveal">
           Lived Experience • Shared Wisdom • Human Connection
         </div>
       )}

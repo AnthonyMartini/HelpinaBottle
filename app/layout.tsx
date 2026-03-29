@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   title: 'Help in a Bottle | Human Connection & Wisdom',
   description: 'A sanctuary for human wisdom. Share your journey or find a map for your struggle.',
   icons: {
-    icon: '/favicon.ico',
+    icon: '/favicon.svg',
   },
 };
 
