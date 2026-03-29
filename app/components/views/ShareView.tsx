@@ -12,7 +12,7 @@ interface ShareViewProps {
 }
 
 export default function ShareView({ onBack }: ShareViewProps) {
-  const [content, setContent] = useState('');
+  const [draft, setDraft] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAiTyping, setIsAiTyping] = useState(false);
@@ -32,14 +32,13 @@ export default function ShareView({ onBack }: ShareViewProps) {
     }
   }, [messages, isAiTyping]);
 
-  const handleSendMessage = async () => {
-    if (!content.trim() || isAiTyping) return;
+  const handleReviewRequest = async () => {
+    if (!draft.trim() || isAiTyping) return;
 
-    const userMessage = content.trim();
+    const userMessage = `I have drafted this story: "${draft.trim()}". Please review it.`;
     const newMessages: Message[] = [...messages, { role: 'user', content: userMessage }];
     
     setMessages(newMessages);
-    setContent('');
     setIsAiTyping(true);
     setError('');
 
@@ -62,6 +61,8 @@ export default function ShareView({ onBack }: ShareViewProps) {
         setRefinedStory(data.refinedStory || '');
         setSuggestedTitle(data.suggestedTitle || '');
         setSuggestedTags(data.suggestedTags || '');
+      } else {
+        setIsReady(false);
       }
     } catch (error: any) {
       console.error('Chat error:', error);
@@ -76,8 +77,8 @@ export default function ShareView({ onBack }: ShareViewProps) {
     setError('');
 
     try {
-      // Use refined story or last user contribution if refined is not found
-      const finalStory = refinedStory || messages.map(m => m.content).join('\n\n');
+      // Use refined story or the original draft if refined is unavailable
+      const finalStory = refinedStory || draft || messages.map(m => m.content).join('\n\n');
       const finalTitle = suggestedTitle || 'A Shared Wisdom';
       const finalTags = suggestedTags || '';
       
@@ -97,7 +98,6 @@ export default function ShareView({ onBack }: ShareViewProps) {
 
       setIsSuccess(true);
       
-      // Delay to show the success animation before returning
       setTimeout(() => {
         onBack();
       }, 4000);
@@ -136,26 +136,6 @@ export default function ShareView({ onBack }: ShareViewProps) {
             Your wisdom has been <span style={{ fontStyle: 'italic' }}>cast.</span>
           </h2>
           <p style={{ fontSize: '0.8rem', opacity: 0.5, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#1a1a1a', marginBottom: '2.5rem' }}>It is now sailing towards someone who needs it.</p>
-          
-          <div style={{ background: 'rgba(0,0,0,0.03)', padding: '2rem', borderRadius: '30px', border: '1px solid rgba(0,0,0,0.05)', animation: 'fadeUp 1s ease 0.5s forwards', opacity: 0 }}>
-             <p style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.2em', opacity: 0.4, marginBottom: '0.8rem' }}>Your Memory Token (ID)</p>
-             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem' }}>
-                <code style={{ fontSize: '1.1rem', fontWeight: 400, color: '#1a1a1a', background: 'white', padding: '0.8rem 1.2rem', borderRadius: '15px', border: '1px solid rgba(0,0,0,0.02)', boxShadow: '0 5px 15px rgba(0,0,0,0.02)' }}>{crypto.randomUUID().split('-')[0].toUpperCase()}</code>
-                <button 
-                  onClick={() => {
-                    const id = document.querySelector('code')?.innerText || '';
-                    navigator.clipboard.writeText(id);
-                    const btn = document.getElementById('copy-btn');
-                    if (btn) btn.innerText = 'COPIED';
-                  }}
-                  id="copy-btn"
-                  style={{ background: '#1a1a1a', color: 'white', border: 'none', padding: '0.7rem 1.4rem', borderRadius: '15px', fontSize: '0.7rem', letterSpacing: '0.1em', cursor: 'pointer' }}
-                >
-                  COPY
-                </button>
-             </div>
-             <p style={{ fontSize: '0.8rem', opacity: 0.4, marginTop: '1rem' }}>Save this token to check your message's impact later.</p>
-          </div>
         </div>
         <style jsx>{`
           .sailing-bottle {
@@ -172,10 +152,6 @@ export default function ShareView({ onBack }: ShareViewProps) {
             from { opacity: 0; }
             to { opacity: 1; }
           }
-          @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
         `}</style>
       </main>
     );
@@ -184,9 +160,9 @@ export default function ShareView({ onBack }: ShareViewProps) {
   return (
     <main className="hero-content" style={{ marginTop: '0', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100vh', padding: '1rem' }}>
       <div className="glass-card" style={{ 
-        maxWidth: '900px', 
+        maxWidth: '1000px', 
         width: '100%', 
-        maxHeight: '85vh',
+        maxHeight: '90vh',
         background: 'rgba(255, 255, 255, 0.7)', 
         backdropFilter: 'blur(45px)',
         WebkitBackdropFilter: 'blur(45px)',
@@ -203,227 +179,177 @@ export default function ShareView({ onBack }: ShareViewProps) {
       }}>
         {!isSubmitting ? (
           <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }} className="fade-up-reveal">
-            {/* Back Button (Top Left) */}
-            <div style={{ position: 'absolute', top: '2rem', left: '2.5rem' }}>
+            {/* Back Button */}
+            <div style={{ position: 'absolute', top: '1.5rem', left: '2rem' }}>
               <button 
                 onClick={onBack}
-                style={{ background: 'transparent', border: 'none', color: '#888', fontSize: '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase', cursor: 'pointer', fontWeight: 500 }}
+                style={{ background: 'transparent', border: 'none', color: '#888', fontSize: '0.7rem', letterSpacing: '0.1em', textTransform: 'uppercase', cursor: 'pointer', fontWeight: 500 }}
               >
-                ← Back to shore
+                ← Back
               </button>
             </div>
 
             {/* Header */}
-            <div style={{ marginBottom: '2.5rem', textAlign: 'center', padding: '0 1rem' }}>
-              <h1 style={{ fontFamily: 'var(--font-serif, serif)', fontSize: '2.4rem', fontWeight: 500, marginBottom: '0.6rem', letterSpacing: '-0.02em' }}>
-                Share Your Experience
-              </h1>
-              <p style={{ fontSize: '0.9rem', opacity: 0.6, fontWeight: 700, letterSpacing: '0.15em', color: '#1a1a1a', textTransform: 'uppercase', marginBottom: '1.2rem' }}>
-                Your journey can be someone else's map.
-              </p>
-              <p style={{ fontSize: '1.05rem', opacity: 0.5, lineHeight: 1.6, fontWeight: 300, color: '#444', maxWidth: '650px', margin: '0 auto' }}>
-                Every struggle you have survived holds the potential to guide another. By sharing your breakthrough, you are casting a bottle of help into the sea that someone will find when they need it most.
-              </p>
+            <div style={{ marginBottom: '1.5rem', textAlign: 'center' }}>
+              <h1 style={{ fontFamily: 'var(--font-serif, serif)', fontSize: '2.2rem', fontWeight: 500, marginBottom: '0.5rem' }}>Share Your Wisdom</h1>
+              <p style={{ fontSize: '0.85rem', opacity: 0.6, letterSpacing: '0.15em', textTransform: 'uppercase' }}>Your journey is someone else's map.</p>
             </div>
 
-            {/* Chat Area */}
-            <div 
-              ref={scrollRef}
-              style={{ 
-                flex: 1, 
-                overflowY: 'auto', 
-                padding: '1rem 0',
-                display: 'flex', 
-                flexDirection: 'column', 
-                gap: '1.5rem',
-                scrollbarWidth: 'none',
-                msOverflowStyle: 'none'
-              }}
-              className="chat-thread"
-            >
-              {/* Initial Greeting */}
-              <div style={{ alignSelf: 'flex-start', maxWidth: '85%', animation: 'fadeUp 0.6s ease out' }}>
-                <div style={{ background: 'rgba(0,0,0,0.08)', border: '1px solid rgba(0,0,0,0.08)', padding: '1.2rem 1.6rem', borderRadius: '0 20px 20px 20px', fontSize: '1.1rem', lineHeight: 1.5, fontWeight: 300, textAlign: 'left' }}>
-                  What is a lesson the waves of life have taught you? I am here to help you scribe it.
-                </div>
-              </div>
-
-              {messages.map((msg, idx) => (
-                <div 
-                  key={idx} 
-                  style={{ 
-                    alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start', 
-                    maxWidth: '85%',
-                    animation: 'fadeUp 0.4s ease out'
-                  }}
-                >
-                  <div style={{ 
-                    background: msg.role === 'user' ? '#1a1a1a' : 'rgba(0,0,0,0.08)', 
-                    color: msg.role === 'user' ? 'white' : '#1a1a1a',
-                    border: msg.role === 'user' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.08)',
-                    padding: '1.2rem 1.6rem', 
-                    textAlign: 'left',
-                    borderRadius: msg.role === 'user' ? '20px 20px 0 20px' : '0 20px 20px 0', 
-                    fontSize: '1.1rem', 
-                    lineHeight: 1.5, 
-                    fontWeight: 300,
-                    boxShadow: msg.role === 'user' ? '0 10px 25px rgba(0,0,0,0.1)' : 'none'
-                  }}>
-                    {msg.content}
-                  </div>
-                </div>
-              ))}
-
-              {isAiTyping && (
-                <div style={{ alignSelf: 'flex-start', padding: '1rem 1.6rem' }}>
-                  <div className="typing-dots" style={{ display: 'flex', gap: '4px' }}>
-                    <div className="dot" style={{ width: '6px', height: '6px', background: '#aaa', borderRadius: '50%' }}></div>
-                    <div className="dot" style={{ width: '6px', height: '6px', background: '#aaa', borderRadius: '50%' }}></div>
-                    <div className="dot" style={{ width: '6px', height: '6px', background: '#aaa', borderRadius: '50%' }}></div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Input Area */}
-            <div style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              {error && (
-                <div style={{ padding: '0.8rem 1rem', background: 'rgba(211, 47, 47, 0.05)', color: '#d32f2f', fontSize: '0.8rem', borderRadius: '12px', border: '1px solid rgba(211, 47, 47, 0.1)' }}>
-                  {error}
-                </div>
-              )}
+            <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '2rem', flex: 1, minHeight: 0 }}>
               
-              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', background: 'rgba(0,0,0,0.02)', borderRadius: '25px', padding: '0.5rem 0.5rem 0.5rem 1.5rem', border: '1px solid rgba(0,0,0,0.05)' }}>
-                <input 
-                  autoFocus
-                  type="text"
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                  placeholder="Tell me your story or a lesson you learned..."
-                  style={{ 
-                    flex: 1, 
-                    background: 'transparent', 
-                    border: 'none', 
-                    outline: 'none', 
-                    fontSize: '1.1rem', 
-                    color: '#1a1a1a', 
-                    fontWeight: 300,
-                    padding: '0.8rem 0'
-                  }}
-                  disabled={isSubmitting || isAiTyping}
-                />
+              {/* Left Column: Input Area */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                  <label style={{ fontSize: '0.7rem', letterSpacing: '0.1em', textTransform: 'uppercase', opacity: 0.5, marginBottom: '0.8rem', fontWeight: 700 }}>Write Your Experience</label>
+                  <textarea 
+                    value={draft}
+                    onChange={(e) => setDraft(e.target.value)}
+                    placeholder="Tell us what you learned from a struggle you overcame..."
+                    style={{ 
+                      flex: 1,
+                      width: '100%',
+                      background: 'rgba(255,255,255,0.4)',
+                      border: '1px solid rgba(0,0,0,0.05)',
+                      borderRadius: '20px',
+                      padding: '1.5rem',
+                      fontSize: '1.1rem',
+                      lineHeight: '1.6',
+                      color: '#1a1a1a',
+                      fontFamily: 'inherit',
+                      resize: 'none',
+                      outline: 'none',
+                      transition: 'border-color 0.3s ease'
+                    }}
+                  />
+                </div>
+                
                 <button 
-                  onClick={handleSendMessage}
+                  onClick={handleReviewRequest}
+                  disabled={!draft.trim() || isAiTyping}
                   style={{ 
                     background: '#1a1a1a', 
                     color: 'white', 
-                    border: 'none', 
+                    padding: '1.2rem', 
                     borderRadius: '20px', 
-                    padding: '0.8rem 1.8rem', 
-                    fontSize: '0.85rem', 
+                    border: 'none', 
                     cursor: 'pointer',
-                    opacity: content.trim() ? 1 : 0.4
+                    fontSize: '0.9rem',
+                    letterSpacing: '0.1em',
+                    fontWeight: 500,
+                    opacity: (!draft.trim() || isAiTyping) ? 0.3 : 1,
+                    transition: 'all 0.3s ease'
                   }}
-                  disabled={!content.trim() || isAiTyping}
                 >
-                  Send
+                  {isAiTyping ? 'CONSULTING SCRIBE...' : 'REVIEW WITH THE SCRIBE'}
                 </button>
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '0 0.5rem' }}>
 
                 {isReady && (
-                  <button 
-                    onClick={handleCastIntoTheSea} 
-                    className="btn-glass pulse-subtle"
-                    style={{ 
-                      background: 'linear-gradient(135deg, #2a2a2a, #1a1a1a)', 
-                      color: 'white', 
-                      padding: '1rem 2.8rem', 
-                      borderRadius: '50px', 
-                      fontSize: '0.9rem', 
-                      letterSpacing: '0.1em',
-                      cursor: 'pointer',
-                      border: 'none',
-                      boxShadow: '0 15px 35px rgba(0,0,0,0.2)'
-                    }}
-                  >
-                    CAST WISDOM →
-                  </button>
+                  <div style={{ 
+                    background: 'rgba(255,255,255,0.8)', 
+                    padding: '1.5rem', 
+                    borderRadius: '20px', 
+                    border: '2px solid #1a1a1a',
+                    animation: 'fadeUp 0.5s ease'
+                  }}>
+                    <h3 style={{ fontSize: '0.7rem', textTransform: 'uppercase', opacity: 0.5, marginBottom: '0.8rem' }}>The Scribe suggests:</h3>
+                    <p style={{ fontSize: '1rem', fontStyle: 'italic', marginBottom: '1.5rem' }}>"{refinedStory}"</p>
+                    <button 
+                      onClick={handleCastIntoTheSea}
+                      style={{ 
+                        width: '100%',
+                        background: 'linear-gradient(135deg, #1a1a1a, #444)',
+                        color: 'white',
+                        padding: '1rem',
+                        borderRadius: '15px',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontWeight: 600,
+                        boxShadow: '0 10px 20px rgba(0,0,0,0.2)'
+                      }}
+                    >
+                      CAST WISDOM →
+                    </button>
+                  </div>
                 )}
               </div>
+
+              {/* Right Column: Chat Consultation */}
+              <div style={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                background: 'rgba(0,0,0,0.03)', 
+                borderRadius: '25px', 
+                padding: '1.5rem',
+                border: '1px solid rgba(0,0,0,0.02)',
+                minHeight: 0
+              }}>
+                <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.15em', opacity: 0.4, marginBottom: '1rem', textAlign: 'center' }}>Scribe Consultation</div>
+                <div 
+                  ref={scrollRef}
+                  style={{ 
+                    flex: 1, 
+                    overflowY: 'auto', 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    gap: '1rem',
+                    scrollbarWidth: 'none'
+                  }}
+                >
+                  <div style={{ alignSelf: 'flex-start', maxWidth: '90%' }}>
+                    <div style={{ background: 'white', padding: '1rem', borderRadius: '0 15px 15px 15px', fontSize: '0.9rem', lineHeight: 1.4, border: '1px solid rgba(0,0,0,0.05)' }}>
+                      Welcome. Drafe your wisdom and I will help you ensure it can properly guide the lost.
+                    </div>
+                  </div>
+                  {messages.map((msg, idx) => (
+                    <div key={idx} style={{ alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start', maxWidth: '90%' }}>
+                      <div style={{ 
+                        background: msg.role === 'user' ? '#1a1a1a' : 'white', 
+                        color: msg.role === 'user' ? 'white' : '#1a1a1a',
+                        padding: '1rem', 
+                        borderRadius: msg.role === 'user' ? '15px 15px 0 15px' : '0 15px 15px 15px', 
+                        fontSize: '0.9rem', 
+                        lineHeight: 1.4,
+                        border: msg.role === 'user' ? 'none' : '1px solid rgba(0,0,0,0.05)'
+                      }}>
+                        {msg.content}
+                      </div>
+                    </div>
+                  ))}
+                  {isAiTyping && (
+                    <div style={{ alignSelf: 'flex-start', padding: '0.5rem 1rem' }}>
+                      <div style={{ display: 'flex', gap: '3px' }}>
+                        <div style={{ width: '4px', height: '4px', background: '#aaa', borderRadius: '50%', animation: 'dotBounce 1.4s infinite' }}></div>
+                        <div style={{ width: '4px', height: '4px', background: '#aaa', borderRadius: '50%', animation: 'dotBounce 1.4s infinite', animationDelay: '0.2s' }}></div>
+                        <div style={{ width: '4px', height: '4px', background: '#aaa', borderRadius: '50%', animation: 'dotBounce 1.4s infinite', animationDelay: '0.4s' }}></div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
+            
+            {error && <div style={{ color: '#d32f2f', fontSize: '0.8rem', marginTop: '1rem', textAlign: 'center' }}>{error}</div>}
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: '3rem' }} className="fade-in">
-            <div className="wave-container" style={{ opacity: 0.4, height: '60px', display: 'flex', alignItems: 'center' }}>
-              {[...Array(12)].map((_, i) => (
-                <div 
-                  key={i} 
-                  className="wave-bar" 
-                  style={{ 
-                    animation: `waveHeight 1.5s ease-in-out infinite`,
-                    animationDelay: `${i * 0.1}s`, 
-                    height: '20px', 
-                    background: '#1a1a1a', 
-                    width: '4px', 
-                    margin: '0 4px',
-                    borderRadius: '10px'
-                  }}
-                ></div>
-              ))}
-            </div>
-            
-            <h2 style={{ 
-              fontFamily: 'var(--font-serif, serif)', 
-              fontSize: '2.5rem', 
-              color: '#1a1a1a', 
-              fontWeight: 400, 
-              letterSpacing: '-0.01em', 
-              textAlign: 'center',
-              minHeight: '8rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              margin: 0
-            }}>
-               Sealing your wisdom...
-            </h2>
-            
-            <p style={{ opacity: 0.4, fontStyle: 'italic', fontSize: '1rem' }}>It is the first step of its long journey.</p>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: '2rem' }}>
+             <p className="pulse" style={{ fontSize: '1.5rem', fontWeight: 300, letterSpacing: '0.1em' }}>Sealing your wisdom...</p>
           </div>
         )}
       </div>
 
       <style jsx>{`
-        @keyframes waveHeight {
-          0%, 100% { height: 20px; }
-          50% { height: 60px; }
-        }
         @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(15px); }
+          from { opacity: 0; transform: translateY(10px); }
           to { opacity: 1; transform: translateY(0); }
         }
-        .pulse-subtle {
-          animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-          0% { transform: scale(1); box-shadow: 0 15px 35px rgba(0,0,0,0.2); }
-          50% { transform: scale(1.03); box-shadow: 0 20px 45px rgba(0,0,0,0.25); }
-          100% { transform: scale(1); box-shadow: 0 15px 35px rgba(0,0,0,0.2); }
-        }
-        .typing-dots .dot {
-          animation: dotBounce 1.4s infinite;
-        }
-        .typing-dots .dot:nth-child(2) { animation-delay: 0.2s; }
-        .typing-dots .dot:nth-child(3) { animation-delay: 0.4s; }
         @keyframes dotBounce {
           0%, 80%, 100% { transform: translateY(0); }
-          40% { transform: translateY(-6px); }
+          40% { transform: translateY(-4px); }
         }
-        .chat-thread::-webkit-scrollbar {
-          display: none;
+        .pulse { animation: pulse 2s infinite; }
+        @keyframes pulse {
+          0%, 100% { opacity: 0.5; }
+          50% { opacity: 1; }
         }
       `}</style>
     </main>
