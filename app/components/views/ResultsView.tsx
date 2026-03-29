@@ -6,7 +6,6 @@ interface Bottle {
   id: string;
   text: string;
   createdAt?: string;
-  likes: number;
 }
 
 interface ResultsViewProps {
@@ -20,44 +19,6 @@ export default function ResultsView({ query, onBack }: ResultsViewProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [loadingStatus, setLoadingStatus] = useState('Connection with human stories...');
-  const [likedIds, setLikedIds] = useState<string[]>([]);
-  const [toast, setToast] = useState<string | null>(null);
-
-  useEffect(() => {
-    const stored = localStorage.getItem('humanhelp_liked_ids');
-    if (stored) {
-      try {
-        setLikedIds(JSON.parse(stored));
-      } catch (e) {
-        console.error('Failed to parse liked IDs');
-      }
-    }
-  }, []);
-
-  const handleLike = async (id: string) => {
-    if (likedIds.includes(id)) return;
-
-    try {
-      const res = await fetch('/api/like', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id })
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setMatches(prev => prev.map(m => m.id === id ? { ...m, likes: data.likes } : m));
-        
-        const newLikedIds = [...likedIds, id];
-        setLikedIds(newLikedIds);
-        localStorage.setItem('humanhelp_liked_ids', JSON.stringify(newLikedIds));
-        
-        setToast('Your resonance has been noted. We will let the original person know!');
-        setTimeout(() => setToast(null), 4000);
-      }
-    } catch (err) {
-      console.error('Like error:', err);
-    }
-  };
 
   // Cycle through loading messages
   useEffect(() => {
@@ -279,63 +240,16 @@ export default function ResultsView({ query, onBack }: ResultsViewProps) {
                   </p>
                 </div>
                 
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '2rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    <div style={{ width: '10px', height: '10px', background: 'rgba(0,0,0,0.1)', borderRadius: '50%' }}></div>
-                    <span style={{ fontSize: '0.8rem', color: '#999', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-                      {match.createdAt ? new Date(match.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'Eternal Wisdom'}
-                    </span>
-                  </div>
-
-                  <button 
-                    onClick={() => handleLike(match.id)}
-                    className={`like-button ${likedIds.includes(match.id) ? 'liked' : ''}`}
-                    disabled={likedIds.includes(match.id)}
-                    style={{ 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      gap: '0.6rem', 
-                      background: likedIds.includes(match.id) ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 107, 107, 0.05)', 
-                      border: '1px solid rgba(0, 0, 0, 0.05)', 
-                      color: likedIds.includes(match.id) ? '#999' : '#ff6b6b',
-                      padding: '0.6rem 1.2rem', 
-                      borderRadius: '20px', 
-                      cursor: likedIds.includes(match.id) ? 'default' : 'pointer',
-                      transition: 'all 0.3s ease'
-                    }}
-                  >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style={{ opacity: likedIds.includes(match.id) ? 0.4 : 1 }}>
-                      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                    </svg>
-                    <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>{match.likes || 0}</span>
-                  </button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '2rem' }}>
+                  <div style={{ width: '10px', height: '10px', background: 'rgba(0,0,0,0.1)', borderRadius: '50%' }}></div>
+                  <span style={{ fontSize: '0.8rem', color: '#999', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                    {match.createdAt ? new Date(match.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'Eternal Wisdom'}
+                  </span>
                 </div>
               </div>
             ))
           )}
         </section>
-        
-        {/* Toast Notification */}
-        {toast && (
-          <div style={{ 
-            position: 'fixed', 
-            bottom: '3rem', 
-            left: '50%', 
-            transform: 'translateX(-50%)', 
-            background: 'rgba(26, 26, 26, 0.95)', 
-            color: 'white', 
-            padding: '1.2rem 2.5rem', 
-            borderRadius: '25px', 
-            zIndex: 1000, 
-            boxShadow: '0 20px 50px rgba(0,0,0,0.3)',
-            border: '1px solid rgba(255,255,255,0.1)',
-            fontSize: '0.95rem',
-            fontWeight: 400,
-            animation: 'fadeUpToast 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards'
-          }}>
-            {toast}
-          </div>
-        )}
 
       </div>
       

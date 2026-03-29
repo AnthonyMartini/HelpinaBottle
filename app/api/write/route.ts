@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
 
     // Save bottle
     const createdAt = new Date().toISOString();
-    const bottle = { id, text, embedding, createdAt, likes: 0 };
+    const bottle = { id, text, embedding, createdAt };
     await saveBottle(bottle);
 
     return NextResponse.json({ success: true, id }, { status: 201 });

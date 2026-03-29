@@ -104,12 +104,6 @@ export default function LookupView({ onBack }: LookupViewProps) {
           <div className="fade-up-reveal" style={{ marginTop: '3rem', textAlign: 'left', background: 'white', padding: '2.5rem', borderRadius: '30px', boxShadow: '0 15px 45px rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.02)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                <h3 style={{ fontSize: '0.7rem', opacity: 0.4, textTransform: 'uppercase', letterSpacing: '0.2rem' }}>YOUR MESSAGE</h3>
-               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#ff6b6b' }}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                  </svg>
-                  <span style={{ fontWeight: 700, fontSize: '1.1rem' }}>{result.likes || 0} Repersonances</span>
-               </div>
             </div>
             <p style={{ fontSize: '1.1rem', lineHeight: 1.6, fontWeight: 300, color: '#333', fontStyle: 'italic' }}>
               "{result.text}"
